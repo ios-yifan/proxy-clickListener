@@ -45,19 +45,19 @@ public class InjectUtils {
                         //int[] ids = ((OnClick) annotation).value();
 
 
-                        // 构建一个接口的实现类 方便保存 target（就是 activity），保证按钮的点击事件响应到正确的 activity
-                        ListenerInvocationHandler<Activity> listenerInvocationHandler = new ListenerInvocationHandler(valueMethod,mainActivity);
+                        // 构建一个接口的实现类 方便保存 target（就是 activity），保证按钮的点击事件响应到正确的
+                        // 注意此处的传参。 declaredMethod 是获取到class 中的点击方法，  不是获取
+                        ListenerInvocationHandler<Activity> listenerInvocationHandler = new ListenerInvocationHandler(declaredMethod,mainActivity);
 
                         // 生成一个代理对象，
                         Object proxyInstance = Proxy.newProxyInstance(listenerType.getClassLoader(), new Class[]{listenerType}, listenerInvocationHandler);
 
-                        // 遍历 ID 获取到 view，给 view 添加
+                        // 遍历 ID 获取到 view，通过反射给 view 添加监(监听对象为 proxyInstance);
                         for (int viewId : viewIds) {
                             View viewById = mainActivity.findViewById(viewId);
                             Method setter = viewById.getClass().getMethod(listenerSetter,listenerType);
-                            setter.invoke(viewById,proxyInstance);
+                            setter.invoke(viewById,proxyInstance); //此处代码相当于 viewById.setOnClickListener(proxyInstance)
                         }
-
                         valueMethod.setAccessible(true);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -79,7 +79,8 @@ public class InjectUtils {
 
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            return method.invoke(target,args);
+            return this.method.invoke(target,args);
+            // 此处用 this.method 就是mainActivity中的 click , 传入对应的参数 （target 就是谁响应,args 就是具体的 view）
         }
     }
 }

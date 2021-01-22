@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = "MainActivity";
 
@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @OnClick({R.id.image_one,R.id.image_two})
-    public void onClick(View view){
+    public void click(View view){
 
         switch (view.getId()){
             case R.id.image_one:
